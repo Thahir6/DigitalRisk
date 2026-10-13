@@ -26,7 +26,7 @@ import scanRoutes from './routes/scanRoutes';
 import { authMiddleware, AuthenticatedRequest } from './auth';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -148,7 +148,9 @@ app.get('/api', (_req, res) => {
 });
 
 // Production Static Frontend Assets
-const distPath = path.join(process.cwd(), 'frontend', 'dist');
+const distPath = fs.existsSync(path.join(process.cwd(), 'frontend', 'dist'))
+  ? path.join(process.cwd(), 'frontend', 'dist')
+  : path.join(__dirname, '..', 'frontend', 'dist');
 const distIndexPath = path.join(distPath, 'index.html');
 
 if (fs.existsSync(distPath)) {
@@ -644,8 +646,8 @@ app.use((req, res) => {
 // Initialize database and start listening
 getDb()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`BrandGuard Backend running at http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`BrandGuard Backend running at http://0.0.0.0:${PORT}`);
     });
   })
   .catch((err) => {
